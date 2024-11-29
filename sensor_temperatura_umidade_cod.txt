@@ -1,0 +1,45 @@
+#include <DHT.h>
+#define DHTPIN 2
+#define DHTTYPE DHT11
+
+DHT sensordht11(DHTPIN, DHTTYPE); 
+
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+unsigned long lastReadTime = 0;  // Variável para controlar o tempo de leitura
+unsigned long readInterval = 3000; // Intervalo de leitura de 3 segundos
+
+void setup() {
+  lcd.begin(16, 2);
+  lcd.backlight();
+  dht.begin();
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+  
+  // Verifique se é hora de realizar uma nova leitura
+  
+  if (tempoAtual - tempoUltimaLeitura >= intervaloLeitura) {  // Se o tempo atual menos o tempo da última leitura for maior ou igual ao intervalo de leitura
+  tempoUltimaLeitura = tempoAtual;  // Atualiza o tempo da última leitura com o tempo atual 
+
+    // Lê a umidade e a temperatura
+    float h = sensordht11.readHumidity();  
+    float t = sensordht11.readTemperature();  
+
+    // Limpa o LCD e exibe os valores de umidade e temperatura
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(F("Humidade: "));
+    lcd.print(h);
+    lcd.print(F("%"));
+
+    lcd.setCursor(0, 1);
+    lcd.print(F("Temperatura: "));
+    lcd.print(t);
+    lcd.print(F("°C"));
+
+    delay(2000);
+  }
+}
